@@ -1,6 +1,6 @@
 import type { ReportPayload } from "@/types/report";
 import { REPORT_CSS } from "./report.css";
-import { formatDateLong } from "@/utils/formatDate";
+import { formatDateShort } from "@/utils/formatDate";
 import { CLUB_NAME } from "@/utils/constants";
 
 function escapeHtml(s: string): string {
@@ -12,9 +12,7 @@ function escapeHtml(s: string): string {
     .replace(/'/g, "&#39;");
 }
 
-function row(label: string, value: string): string {
-  return `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(value)}</td></tr>`;
-}
+
 
 function escapeAttribute(s: string): string {
   return escapeHtml(s);
@@ -33,16 +31,22 @@ export function renderReportHtml(payload: ReportPayload, options: RenderOptions 
   const { meta, ai, photographs, signatories } = payload;
   const assetBaseUrl = normalizeAssetBaseUrl(options.assetBaseUrl);
   const headerTable = `
-    <table class="header">
+    <table class="header" style="width: 100%; border-collapse: collapse; margin-bottom: 10pt;">
       <tbody>
-        ${row("Academic Year", meta.academicYear)}
-        ${row("Semester", meta.semester)}
-        ${row("Event Title", meta.title)}
-        ${row("Date", formatDateLong(meta.date))}
-        ${row("Venue", meta.venue)}
-        ${row("Participants", meta.participants)}
-        ${row("ACA/R No.", meta.acaRNo)}
-        ${row("Rev No.", meta.revNo)}
+        <tr>
+          <td style="width: 25%;"><strong>ACA/R / 56</strong></td>
+          <td rowspan="2" style="width: 50%; text-align: center; vertical-align: middle;"><strong>Dhole Patil College of Engineering</strong></td>
+          <td style="width: 25%;"><strong>AcademicYear:${escapeHtml(meta.academicYear)}</strong></td>
+        </tr>
+        <tr>
+          <td><strong>Rev: 00</strong></td>
+          <td><strong>Semester: ${escapeHtml(meta.semester)}</strong></td>
+        </tr>
+        <tr>
+          <td><strong>Date: 15.12.2016</strong></td>
+          <td style="text-align: center;"><strong>Report</strong></td>
+          <td><strong>Date- ${formatDateShort(meta.date)}</strong></td>
+        </tr>
       </tbody>
     </table>
   `;
@@ -80,8 +84,16 @@ export function renderReportHtml(payload: ReportPayload, options: RenderOptions 
 </head>
 <body>
   <main class="report">
-    <header class="masthead">
-      <img class="masthead-banner" src="report-header.png" alt="Dhole Patil College header" />
+    <header class="masthead" style="display: flex; align-items: center; border-bottom: 1.5px solid black; padding-bottom: 10px; margin-bottom: 20px;">
+      <div style="flex: 0 0 auto; margin-right: 20px;">
+        <img class="masthead-logo" src="logo.svg" alt="Dhole Patil Education Society" style="width: 160px; height: auto;" />
+      </div>
+      <div style="flex: 1; text-align: left;">
+        <div style="font-size: 16pt; font-weight: 800; color: #000; line-height: 1.2;">DHOLE PATIL COLLEGE OF ENGINEERING</div>
+        <div style="font-size: 8pt; font-weight: 700; color: #000; line-height: 1.3; margin-top: 2px;">Accredited with Grade A+ by NAAC</div>
+        <div style="font-size: 8pt; font-weight: 700; color: #000; line-height: 1.3;">ISO 9001:2015 Certified Institute, Approved by A.I.C.T.E New Delhi,</div>
+        <div style="font-size: 8pt; font-weight: 700; color: #000; line-height: 1.3;">D.T.E. Govt of Maharashtra and Affiliated to Savitribai Phule Pune University, Pune.</div>
+      </div>
     </header>
 
     <section class="report-shell">

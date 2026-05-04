@@ -16,10 +16,11 @@ import {
   TableRow,
   TextRun,
   UnderlineType,
+  VerticalAlign,
   WidthType,
 } from "docx";
 import type { ReportPayload } from "@/types/report";
-import { formatDateLong } from "@/utils/formatDate";
+import { formatDateShort } from "@/utils/formatDate";
 import { scaleToMaxWidth, type ProcessedImage } from "@/services/imagePipeline";
 import { CLUB_NAME } from "@/utils/constants";
 
@@ -38,23 +39,17 @@ const ALL_BORDERS = {
   right: BORDER,
 };
 
-function cell(text: string, opts: CellOpts = {}): TableCell {
+function headerCell(text: string, opts: { rowSpan?: number; width?: number; alignLeft?: boolean } = {}): TableCell {
   return new TableCell({
+    rowSpan: opts.rowSpan,
     width: opts.width ? { size: opts.width, type: WidthType.PERCENTAGE } : undefined,
-    shading: opts.shaded ? { fill: "F3F4F6" } : undefined,
+    verticalAlign: VerticalAlign.CENTER,
+    margins: { top: 100, bottom: 100, left: 100, right: 100 },
     children: [
       new Paragraph({
-        children: [new TextRun({ text, bold: opts.bold, font: "Times New Roman", size: 22 })],
+        alignment: opts.alignLeft ? AlignmentType.LEFT : AlignmentType.CENTER,
+        children: [new TextRun({ text, bold: true, font: "Times New Roman", size: 24 })],
       }),
-    ],
-  });
-}
-
-function headerRow(label: string, value: string): TableRow {
-  return new TableRow({
-    children: [
-      cell(label, { bold: true, shaded: true, width: 30 }),
-      cell(value, { width: 70 }),
     ],
   });
 }
@@ -100,27 +95,77 @@ function captionPara(text: string): Paragraph {
   });
 }
 
-async function buildHeaderBlock(): Promise<Paragraph[]> {
+async function buildHeaderBlock(): Promise<(Paragraph | Table)[]> {
   try {
-    const headerPng = await readFile(join(process.cwd(), "public", "report-header.png"));
-    const width = 520;
-    const height = Math.round((width * 432) / 2417);
+    const logoPng = await readFile(join(process.cwd(), "public", "logo.png"));
+    
+    const noBorder = {
+      top: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+      bottom: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+      left: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+      right: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+      insideHorizontal: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+      insideVertical: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+    };
+
+    const headerLayoutTable = new Table({
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      borders: noBorder,
+      rows: [
+        new TableRow({
+          children: [
+            new TableCell({
+              width: { size: 25, type: WidthType.PERCENTAGE },
+              verticalAlign: VerticalAlign.CENTER,
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  children: [
+                    new ImageRun({
+                      data: logoPng,
+                      transformation: { width: 140, height: 140 },
+                      type: "png",
+                    }),
+                  ],
+                }),
+              ],
+            }),
+            new TableCell({
+              width: { size: 75, type: WidthType.PERCENTAGE },
+              verticalAlign: VerticalAlign.CENTER,
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.LEFT,
+                  spacing: { after: 60 },
+                  children: [new TextRun({ text: "DHOLE PATIL COLLEGE OF ENGINEERING", bold: true, size: 30, font: "Times New Roman" })],
+                }),
+                new Paragraph({
+                  alignment: AlignmentType.LEFT,
+                  spacing: { after: 40 },
+                  children: [new TextRun({ text: "Accredited with Grade A+ by NAAC", bold: true, size: 16, font: "Times New Roman" })],
+                }),
+                new Paragraph({
+                  alignment: AlignmentType.LEFT,
+                  spacing: { after: 40 },
+                  children: [new TextRun({ text: "ISO 9001:2015 Certified Institute, Approved by A.I.C.T.E New Delhi,", bold: true, size: 16, font: "Times New Roman" })],
+                }),
+                new Paragraph({
+                  alignment: AlignmentType.LEFT,
+                  spacing: { after: 120 },
+                  children: [new TextRun({ text: "D.T.E. Govt of Maharashtra and Affiliated to Savitribai Phule Pune University, Pune.", bold: true, size: 16, font: "Times New Roman" })],
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    });
 
     return [
+      headerLayoutTable,
       new Paragraph({
         alignment: AlignmentType.CENTER,
-        spacing: { after: 120 },
-        children: [
-          new ImageRun({
-            data: headerPng,
-            transformation: { width, height },
-            type: "png",
-          }),
-        ],
-      }),
-      new Paragraph({
-        alignment: AlignmentType.CENTER,
-        spacing: { after: 180 },
+        spacing: { before: 120, after: 180 },
         border: { bottom: BORDER },
         children: [
           new TextRun({
@@ -132,7 +177,7 @@ async function buildHeaderBlock(): Promise<Paragraph[]> {
         ],
       }),
     ];
-  } catch {
+  } catch (err) {
     return [
       new Paragraph({
         alignment: AlignmentType.CENTER,
@@ -168,14 +213,26 @@ export async function buildDocx(
       insideVertical: BORDER,
     },
     rows: [
-      headerRow("Academic Year", meta.academicYear),
-      headerRow("Semester", meta.semester),
-      headerRow("Event Title", meta.title),
-      headerRow("Date", formatDateLong(meta.date)),
-      headerRow("Venue", meta.venue),
-      headerRow("Participants", meta.participants),
-      headerRow("ACA/R No.", meta.acaRNo),
-      headerRow("Rev No.", meta.revNo),
+      new TableRow({
+        children: [
+          headerCell("ACA/R / 56", { width: 25, alignLeft: true }),
+          headerCell("Dhole Patil College of Engineering", { rowSpan: 2, width: 50 }),
+          headerCell(`AcademicYear:${meta.academicYear}`, { width: 25, alignLeft: true }),
+        ],
+      }),
+      new TableRow({
+        children: [
+          headerCell("Rev: 00", { alignLeft: true }),
+          headerCell(`Semester: ${meta.semester}`, { alignLeft: true }),
+        ],
+      }),
+      new TableRow({
+        children: [
+          headerCell("Date: 15.12.2016", { alignLeft: true }),
+          headerCell("Report"),
+          headerCell(`Date- ${formatDateShort(meta.date)}`, { alignLeft: true }),
+        ],
+      }),
     ],
   });
 
@@ -274,6 +331,16 @@ export async function buildDocx(
           page: {
             size: { orientation: PageOrientation.PORTRAIT },
             margin: { top: 1080, bottom: 1200, left: 1080, right: 1080 },
+            borders: {
+              pageBorders: {
+                display: "allPages",
+                offsetFrom: "page",
+              },
+              pageBorderTop: { style: BorderStyle.DOUBLE, size: 24, color: "000000", space: 24 },
+              pageBorderBottom: { style: BorderStyle.DOUBLE, size: 24, color: "000000", space: 24 },
+              pageBorderLeft: { style: BorderStyle.DOUBLE, size: 24, color: "000000", space: 24 },
+              pageBorderRight: { style: BorderStyle.DOUBLE, size: 24, color: "000000", space: 24 },
+            },
           },
         },
         children: [

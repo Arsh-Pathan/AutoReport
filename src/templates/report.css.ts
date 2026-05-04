@@ -11,22 +11,70 @@ export const REPORT_CSS = `
     line-height: 1.45;
   }
   .report {
-    padding: 0;
+    padding: 12mm;
     max-width: 182mm;
     margin: 0 auto;
+    border: 4px double #111827;
   }
   .masthead {
     margin-bottom: 10pt;
+    padding-bottom: 8pt;
+    border-bottom: 1.4pt solid #111827;
     page-break-inside: avoid;
   }
-  .masthead-banner {
+  .masthead-grid {
+    display: grid;
+    grid-template-columns: 24mm 1fr 24mm;
+    align-items: center;
+    gap: 6mm;
+  }
+  .masthead-aicte {
+    width: 22mm;
+    height: 22mm;
+    border-radius: 50%;
+    background: #b91c1c;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 11pt;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+  }
+  .masthead-logo {
     display: block;
     width: 100%;
     height: auto;
+    max-height: 24mm;
+    object-fit: contain;
+  }
+  .masthead-center {
+    text-align: center;
+  }
+  .masthead-society {
+    font-size: 10.5pt;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .masthead-institute {
+    font-size: 17pt;
+    font-weight: 700;
+    margin-top: 2pt;
+    line-height: 1.15;
+  }
+  .masthead-accred {
+    font-size: 9.5pt;
+    margin-top: 2pt;
+    line-height: 1.25;
+  }
+  .masthead-address {
+    font-size: 9.5pt;
+    font-style: italic;
+    margin-top: 2pt;
   }
   .report-shell {
-    border: 1.4pt solid #111827;
-    padding: 10pt 12pt 16pt;
+    padding: 10pt 0 16pt;
   }
   .report-label {
     margin-bottom: 10pt;
