@@ -83,7 +83,7 @@ Edit `.env.local`:
 
 ```
 OPENROUTER_API_KEY=sk-or-v1-...
-OPENROUTER_MODEL=anthropic/claude-sonnet-4.5
+OPENROUTER_MODEL=openrouter/auto
 OPENROUTER_APP_NAME=AutoReport
 OPENROUTER_SITE_URL=http://localhost:3000
 
@@ -94,7 +94,7 @@ PUPPETEER_CACHE_DIR=./.cache/puppeteer
 | Variable              | Required | Notes                                                                                |
 | --------------------- | -------- | ------------------------------------------------------------------------------------ |
 | `OPENROUTER_API_KEY`  | yes      | Server-only. Never prefix with `NEXT_PUBLIC_`.                                       |
-| `OPENROUTER_MODEL`    | no       | Default: `anthropic/claude-sonnet-4.5`. Any OpenRouter model that supports JSON mode. |
+| `OPENROUTER_MODEL`    | no       | Default: `openrouter/auto` (OpenRouter picks the best-fit model per request). Override with any specific model id. |
 | `OPENROUTER_APP_NAME` | no       | Shown in your OpenRouter usage dashboard.                                            |
 | `OPENROUTER_SITE_URL` | no       | Same — used as the `HTTP-Referer` header.                                            |
 | `PUPPETEER_CACHE_DIR` | no       | Recommended on Windows; keeps Chromium out of `%USERPROFILE%`.                       |

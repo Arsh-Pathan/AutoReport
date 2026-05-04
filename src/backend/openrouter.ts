@@ -14,7 +14,7 @@ export async function callOpenRouter(messages: ChatMessage[]): Promise<string> {
       "OPENROUTER_API_KEY is not set. Copy .env.local.example to .env.local and fill it in."
     );
   }
-  const model = process.env.OPENROUTER_MODEL || "anthropic/claude-sonnet-4.5";
+  const model = process.env.OPENROUTER_MODEL || "openrouter/auto";
 
   const res = await fetch(OPENROUTER_URL, {
     method: "POST",
@@ -28,6 +28,7 @@ export async function callOpenRouter(messages: ChatMessage[]): Promise<string> {
       model,
       temperature: 0.2,
       response_format: { type: "json_object" },
+      provider: { require_parameters: true },
       messages,
     }),
   });
