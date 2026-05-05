@@ -20,7 +20,10 @@ export const REPORT_CSS = `
       width: 210mm;
       min-height: 297mm;
       margin: 0 auto;
-      background: #ffffff;
+      background-color: #ffffff;
+      /* Simulate A4 page breaks with a red dashed line every 297mm */
+      background-image: linear-gradient(to bottom, transparent 296mm, #ef4444 296mm, #ef4444 296.5mm, transparent 296.5mm);
+      background-size: 100% 297mm;
       box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
       padding: 10mm; /* Space outside the double border, representing page margin */
     }
