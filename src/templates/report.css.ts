@@ -34,6 +34,28 @@ export const REPORT_CSS = `
       width: 100%;
       padding: 0;
     }
+    .report-outer-border {
+      border: none !important;
+    }
+    .report-inner-border {
+      border: none !important;
+    }
+    .report::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      border: 2px solid #000;
+      z-index: -2;
+      pointer-events: none;
+    }
+    .report::after {
+      content: "";
+      position: fixed;
+      top: 4px; left: 4px; right: 4px; bottom: 4px;
+      border: 1px solid #000;
+      z-index: -1;
+      pointer-events: none;
+    }
   }
 
   .report-outer-border {
