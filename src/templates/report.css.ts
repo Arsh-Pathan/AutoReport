@@ -17,6 +17,8 @@ export const REPORT_CSS = `
       zoom: 0.95;
     }
     .report {
+      display: flex;
+      flex-direction: column;
       position: relative;
       width: 210mm;
       min-height: 297mm;
@@ -24,6 +26,7 @@ export const REPORT_CSS = `
       background-color: #ffffff;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       padding: 10mm;
+      box-sizing: border-box;
     }
     /* Draw gray gaps every 297mm to simulate separate physical pages */
     .report::after {
@@ -90,18 +93,23 @@ export const REPORT_CSS = `
   }
 
   .report-outer-border {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     border: 2px solid #000;
     padding: 4px;
-    min-height: 277mm; /* Ensure borders stretch near bottom of A4 */
-    box-decoration-break: clone;
-    -webkit-box-decoration-break: clone;
+    box-sizing: border-box;
   }
   .report-inner-border {
+    flex: 1;
+    display: block;
     border: 1px solid #000;
     padding: 12mm 14mm;
-    min-height: 275mm;
-    box-decoration-break: clone;
-    -webkit-box-decoration-break: clone;
+    box-sizing: border-box;
+  }
+  
+  .content-wrapper {
+    height: max-content;
   }
   
   .masthead {

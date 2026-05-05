@@ -91,7 +91,8 @@ export function renderReportHtml(payload: ReportPayload, options: RenderOptions 
   <main class="report">
     <div class="report-outer-border">
       <div class="report-inner-border">
-        <table class="masthead-table" style="width: 100%; border-bottom: 1.5px solid #000; padding-bottom: 15pt; margin-bottom: 25pt;">
+        <div class="content-wrapper">
+          <table class="masthead-table" style="width: 100%; border-bottom: 1.5px solid #000; padding-bottom: 15pt; margin-bottom: 25pt;">
           <tr>
             <td style="width: 25%; vertical-align: top; text-align: left; padding-left: 10pt;">
               <img src="/logo.png" alt="DPES Logo" style="width: 120px; height: auto;" />
@@ -143,7 +144,8 @@ export function renderReportHtml(payload: ReportPayload, options: RenderOptions 
               ${escapeHtml(signatories.principal)}
             </div>
           </section>
-        </section>
+          </section>
+        </div>
       </div>
     </div>
   </main>
@@ -173,49 +175,39 @@ export function renderReportHtml(payload: ReportPayload, options: RenderOptions 
     // Automatically stretch the borders to complete the simulated A4 page
     function fixPageHeight() {
       const report = document.querySelector('.report');
-      const outer = document.querySelector('.report-outer-border');
-      const inner = document.querySelector('.report-inner-border');
-      if (!report || !outer || !inner) return;
-
-      // Temporarily remove min-heights to measure natural content
-      report.style.minHeight = '0';
-      outer.style.minHeight = '0';
-      inner.style.minHeight = '0';
-
-      // Get natural height
-      const contentHeight = report.scrollHeight;
+      const wrapper = document.querySelector('.content-wrapper');
+      if (!report || !wrapper) return;
 
       // 1mm ~ 3.7795px
       const pxPerMm = 3.779527559;
       // We simulate pages as 297mm + 13mm gap = 310mm intervals
       const totalPageHeightPx = 310 * pxPerMm; 
 
-      const pages = Math.max(1, Math.ceil(contentHeight / totalPageHeightPx));
+      // Measure wrapper content height
+      const contentHeight = wrapper.getBoundingClientRect().height;
+      // Also account for the padding inside report, outer, and inner borders (10mm + 4px + 12mm ~ 23mm top and bottom = 46mm)
+      const paddingPx = 46 * pxPerMm;
+      const totalNeededHeight = contentHeight + paddingPx;
+
+      const pages = Math.max(1, Math.ceil(totalNeededHeight / totalPageHeightPx));
       const requiredMm = (pages * 310) - 13;
       
       report.style.minHeight = requiredMm + 'mm';
-      
-      // outer border has 10mm padding on top/bottom of .report = 20mm total
-      outer.style.minHeight = (requiredMm - 20) + 'mm';
-      // inner border has extra 12mm padding on top/bottom = 24mm total from outer
-      inner.style.minHeight = (requiredMm - 22) + 'mm';
     }
 
-    function runFix() {
-      // Wait for fonts and images to be ready before calculating
-      Promise.all([
-        document.fonts ? document.fonts.ready : Promise.resolve(),
-        ...Array.from(document.images).filter(img => !img.complete).map(img => new Promise(res => { img.onload = img.onerror = res; }))
-      ]).then(fixPageHeight);
-    }
-
-    window.addEventListener('load', runFix);
-    const observer = new MutationObserver(() => {
-      // Small debounce for observer to avoid layout thrashing
-      clearTimeout(window._fixTimeout);
-      window._fixTimeout = setTimeout(runFix, 50);
+    window.addEventListener('load', () => {
+      // Small delay to ensure layout is done
+      setTimeout(fixPageHeight, 100);
     });
-    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+
+    // Observe resizing of the content wrapper itself (handles font loads, image loads, edits)
+    const wrapper = document.querySelector('.content-wrapper');
+    if (wrapper) {
+      const resizeObserver = new ResizeObserver(() => {
+        fixPageHeight();
+      });
+      resizeObserver.observe(wrapper);
+    }
   </script>
 </body>
 </html>`;
