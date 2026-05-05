@@ -241,7 +241,7 @@ export async function buildDocx(
       docChildren.push(
           new Paragraph({
             keepNext: true,
-            spacing: { before: 240, after: 120 },
+            spacing: { before: 360, after: 200 },
             children: [
               new TextRun({
                 text: sec.heading,
@@ -258,7 +258,7 @@ export async function buildDocx(
       docChildren.push(
         new Paragraph({
           alignment: AlignmentType.JUSTIFIED,
-          spacing: { after: 120 },
+          spacing: { after: 200 },
           children: [new TextRun({ text: sec.text, font: "Calibri", size: 24 })], // 12pt
         })
       );
@@ -268,7 +268,7 @@ export async function buildDocx(
           new Paragraph({
             bullet: { level: 0 },
             alignment: AlignmentType.JUSTIFIED,
-            spacing: { after: 80 },
+            spacing: { after: 120 },
             children: [new TextRun({ text: b, font: "Calibri", size: 24 })], // 12pt
           })
         );
@@ -387,6 +387,9 @@ export async function buildDocx(
       default: {
         document: {
           run: { font: "Calibri", size: 24 },
+          paragraph: {
+            spacing: { line: 360 },
+          },
         },
       },
     },
