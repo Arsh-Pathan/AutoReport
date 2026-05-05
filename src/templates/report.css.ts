@@ -17,15 +17,31 @@ export const REPORT_CSS = `
       zoom: 0.95;
     }
     .report {
+      position: relative;
       width: 210mm;
       min-height: 297mm;
       margin: 0 auto;
       background-color: #ffffff;
-      /* Simulate A4 page breaks with a red dashed line every 297mm */
-      background-image: linear-gradient(to bottom, transparent 296mm, #ef4444 296mm, #ef4444 296.5mm, transparent 296.5mm);
-      background-size: 100% 297mm;
-      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-      padding: 10mm; /* Space outside the double border, representing page margin */
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 10mm;
+    }
+    /* Draw gray gaps every 297mm to simulate separate physical pages */
+    .report::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -20mm;
+      right: -20mm;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 50;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 297mm,
+        #e5e7eb 297mm,
+        #e5e7eb 310mm
+      );
     }
   }
 
