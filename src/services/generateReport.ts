@@ -9,34 +9,42 @@ Tone: formal, third person, past tense, no marketing fluff, no emojis, Indian En
 Return ONLY a JSON object matching this schema. No prose, no markdown, no code fences.
 
 {
-  "overview": string,                        // 60-120 words: what happened, why, who organised it
-  "programDetails": {
-    "description": string,                   // 60-120 words: narrative of session flow
-    "bullets": string[]                      // 4-8 concise points: topics, demos, tools, presenters
-  },
-  "outcome": string                          // 50-100 words: skills gained, takeaways, impact
-}`;
+  "sections": [
+    {
+      "id": "unique-string-id",
+      "heading": "String (e.g. 'Overview', 'Program Details', 'Objectives')",
+      "type": "text | bullets | table | image",
+      "text": "String (only if type is 'text')",
+      "bullets": ["String array"] (only if type is 'bullets'),
+      "table": [["Row 1 Col 1", "Row 1 Col 2"], ["Row 2 Col 1", "Row 2 Col 2"]] (only if type is 'table'),
+      "imageIndex": 0 (only if type is 'image', integer corresponding to uploaded photos index)
+    }
+  ]
+}
+
+Structure the report intelligently. Use tables if appropriate for comparing data or schedules. Use bullets for objectives or key points. You may omit image sections if the user didn't mention them.`;
 
 const REPORT_JSON_SCHEMA = {
   type: "object",
   properties: {
-    overview: { type: "string" },
-    programDetails: {
-      type: "object",
-      properties: {
-        description: { type: "string" },
-        bullets: {
-          type: "array",
-          items: { type: "string" },
-          minItems: 4,
-          maxItems: 8,
+    sections: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          heading: { type: "string" },
+          type: { type: "string", enum: ["text", "bullets", "table", "image"] },
+          text: { type: "string" },
+          bullets: { type: "array", items: { type: "string" } },
+          table: { type: "array", items: { type: "array", items: { type: "string" } } },
+          imageIndex: { type: "number" },
         },
+        required: ["id", "heading", "type"],
       },
-      required: ["description", "bullets"],
     },
-    outcome: { type: "string" },
   },
-  required: ["overview", "programDetails", "outcome"],
+  required: ["sections"],
 } as const;
 
 export type GenerateInput = {

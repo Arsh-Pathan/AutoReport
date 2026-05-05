@@ -242,35 +242,99 @@ export async function buildDocx(
       new TextRun({
         text: meta.title,
         bold: true,
-        size: 32,
+        size: 28, // 14pt
         font: "Calibri",
         underline: { type: UnderlineType.SINGLE },
       }),
     ],
   });
 
-  const photoBlocks: Paragraph[] = [];
-  if (images.length) {
-    photoBlocks.push(sectionHeading("Photographs:"));
-    images.forEach((img, i) => {
-      const photo = photographs[i];
-      const { width, height } = scaleToMaxWidth(img.width, img.height, 420);
-      photoBlocks.push(
+  const docChildren: (Paragraph | Table)[] = [
+    ...headerBlock,
+    headerTable,
+    titleParagraph,
+  ];
+
+  ai.sections.forEach((sec) => {
+    if (sec.heading) {
+      docChildren.push(
         new Paragraph({
-          alignment: AlignmentType.CENTER,
-          spacing: { before: 120, after: 60 },
+          spacing: { before: 240, after: 120 },
           children: [
-            new ImageRun({
-              data: img.buffer,
-              transformation: { width, height },
-              type: img.mime === "image/png" ? "png" : "jpg",
-            } as ConstructorParameters<typeof ImageRun>[0]),
+            new TextRun({
+              text: sec.heading,
+              bold: true,
+              size: 28, // 14pt
+              font: "Calibri",
+            }),
           ],
         })
       );
-      photoBlocks.push(captionPara(photo?.caption || `Photograph ${i + 1}`));
-    });
-  }
+    }
+    
+    if (sec.type === "text" && sec.text) {
+      docChildren.push(
+        new Paragraph({
+          alignment: AlignmentType.JUSTIFIED,
+          spacing: { after: 120 },
+          children: [new TextRun({ text: sec.text, font: "Calibri", size: 24 })], // 12pt
+        })
+      );
+    } else if (sec.type === "bullets" && sec.bullets) {
+      sec.bullets.forEach((b) => {
+        docChildren.push(
+          new Paragraph({
+            bullet: { level: 0 },
+            alignment: AlignmentType.JUSTIFIED,
+            spacing: { after: 80 },
+            children: [new TextRun({ text: b, font: "Calibri", size: 24 })], // 12pt
+          })
+        );
+      });
+    } else if (sec.type === "table" && sec.table) {
+      const docxTable = new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        borders: ALL_BORDERS,
+        rows: sec.table.map(r => new TableRow({
+          children: r.map(c => new TableCell({
+            borders: ALL_BORDERS,
+            margins: { top: 60, bottom: 60, left: 60, right: 60 },
+            children: [new Paragraph({ children: [new TextRun({ text: c, font: "Calibri", size: 24 })] })]
+          }))
+        }))
+      });
+      docChildren.push(docxTable);
+      docChildren.push(new Paragraph({ spacing: { after: 120 }, children: [] }));
+    } else if (sec.type === "image" && sec.imageIndex !== undefined) {
+      const photo = photographs[sec.imageIndex];
+      const img = images[sec.imageIndex];
+      if (img) {
+        const { width, height } = scaleToMaxWidth(img.width, img.height, 420);
+        docChildren.push(
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 120, after: 60 },
+            children: [
+              new ImageRun({
+                data: img.buffer,
+                transformation: { width, height },
+                type: img.mime === "image/png" ? "png" : "jpg",
+              } as ConstructorParameters<typeof ImageRun>[0]),
+            ],
+          })
+        );
+        docChildren.push(
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 60, after: 200 },
+            children: [
+              new TextRun({ text: photo?.caption || "", font: "Calibri", size: 24, underline: { type: UnderlineType.SINGLE } }),
+            ],
+          })
+        );
+      }
+    }
+  });
 
   const signatureTable = new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
@@ -284,12 +348,16 @@ export async function buildDocx(
     },
     rows: [
       new TableRow({
-        children: [signatories.advisor, signatories.sdpHead, signatories.principal].map(
-          (name) =>
+        children: [
+          { role: "Club Advisor", name: signatories.advisor },
+          { role: "SDP Head", name: signatories.sdpHead },
+          { role: "Principal", name: signatories.principal }
+        ].map(
+          (sig) =>
             new TableCell({
               width: { size: 33, type: WidthType.PERCENTAGE },
               borders: {
-                top: BORDER,
+                top: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
                 bottom: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
                 left: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
                 right: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
@@ -297,13 +365,23 @@ export async function buildDocx(
               children: [
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
-                  spacing: { before: 100 },
+                  spacing: { after: 60 },
                   children: [
                     new TextRun({
-                      text: name,
+                      text: sig.role,
                       bold: true,
                       font: "Calibri",
-                      size: 22,
+                      size: 24,
+                    }),
+                  ],
+                }),
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  children: [
+                    new TextRun({
+                      text: sig.name,
+                      font: "Calibri",
+                      size: 24,
                     }),
                   ],
                 }),
@@ -313,6 +391,9 @@ export async function buildDocx(
       }),
     ],
   });
+
+  docChildren.push(new Paragraph({ spacing: { before: 720 }, children: [] }));
+  docChildren.push(signatureTable);
 
   const doc = new Document({
     creator: "AutoReport",
@@ -342,26 +423,12 @@ export async function buildDocx(
             },
           },
         },
-        children: [
-          ...headerBlock,
-          headerTable,
-          titleParagraph,
-          sectionHeading("Overview"),
-          bodyParagraph(ai.overview),
-          sectionHeading("Program Details"),
-          bodyParagraph(ai.programDetails.description),
-          ...ai.programDetails.bullets.map(bullet),
-          sectionHeading("Overall Outcome"),
-          bodyParagraph(ai.outcome),
-          ...photoBlocks,
-          new Paragraph({ spacing: { before: 480 }, children: [] }),
-          signatureTable,
-        ],
+        children: docChildren,
       },
     ],
   });
 
-  void Footer; // referenced for future header/footer use
+  void Footer;
   void HeadingLevel;
   void ALL_BORDERS;
 

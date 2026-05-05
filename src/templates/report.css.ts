@@ -5,10 +5,10 @@ export const REPORT_CSS = `
     margin: 0;
     padding: 10px;
     background: #ffffff;
-    color: #111827;
+    color: #000;
     font-family: 'Calibri', sans-serif;
     font-size: 12pt;
-    line-height: 1.45;
+    line-height: 1.5;
   }
   .report {
     padding: 0;
@@ -16,144 +16,114 @@ export const REPORT_CSS = `
     margin: 0 auto;
     background: #ffffff;
   }
-  .report-inner {
-    border: 4px double #111827;
-    padding: 12mm;
+  .report-outer-border {
+    border: 2px solid #000;
+    padding: 4px;
   }
+  .report-inner-border {
+    border: 1px solid #000;
+    padding: 12mm 14mm;
+  }
+  
   .masthead {
-    margin-bottom: 10pt;
-    padding-bottom: 8pt;
-    border-bottom: 1.4pt solid #111827;
-    page-break-inside: avoid;
-  }
-  .masthead-grid {
-    display: grid;
-    grid-template-columns: 24mm 1fr 24mm;
-    align-items: center;
-    gap: 6mm;
-  }
-  .masthead-aicte {
-    width: 22mm;
-    height: 22mm;
-    border-radius: 50%;
-    background: #b91c1c;
-    color: #ffffff;
-    font-weight: 700;
-    font-size: 11pt;
-    letter-spacing: 0.08em;
     display: flex;
     align-items: center;
-    justify-content: center;
-    margin-left: auto;
+    border-bottom: 1.5px solid #000;
+    padding-bottom: 8pt;
+    margin-bottom: 15pt;
   }
   .masthead-logo {
-    display: block;
-    width: 100%;
+    width: 140px;
     height: auto;
-    max-height: 24mm;
-    object-fit: contain;
+    margin-right: 15pt;
   }
-  .masthead-center {
-    text-align: center;
+  .masthead-text-col {
+    flex: 1;
+    text-align: left;
   }
-  .masthead-society {
-    font-size: 10.5pt;
-    font-weight: 700;
-    letter-spacing: 0.04em;
+  .masthead-title {
+    font-size: 16pt;
+    font-weight: bold;
+    line-height: 1.1;
+    margin-bottom: 2pt;
   }
-  .masthead-institute {
-    font-size: 17pt;
-    font-weight: 700;
-    margin-top: 2pt;
-    line-height: 1.15;
+  .masthead-subtitle {
+    font-size: 8pt;
+    font-weight: bold;
+    line-height: 1.3;
   }
-  .masthead-accred {
-    font-size: 9.5pt;
-    margin-top: 2pt;
-    line-height: 1.25;
-  }
-  .masthead-address {
-    font-size: 9.5pt;
-    font-style: italic;
-    margin-top: 2pt;
-  }
-  .report-shell {
-    padding: 10pt 0 16pt;
-  }
-  .report-label {
-    margin-bottom: 10pt;
-    padding-bottom: 6pt;
-    text-align: center;
-    font-size: 10pt;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  table.header {
+  
+  table.header-table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 10pt;
-    page-break-inside: avoid;
+    margin-bottom: 20pt;
   }
-  table.header th, table.header td {
-    border: 1px solid #111827;
-    padding: 4.5pt 7pt;
-    text-align: left;
-    vertical-align: middle;
-    font-size: 10.5pt;
+  table.header-table td {
+    border: 1px solid #000;
+    padding: 4pt 6pt;
+    font-size: 11pt;
   }
-  table.header th {
-    font-weight: 700;
-    width: 27%;
-  }
+  
   h1.title {
     text-align: center;
-    font-size: 16pt;
-    font-weight: 700;
-    margin: 16pt 0 12pt;
-    text-decoration: underline;
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 20pt 0 16pt;
   }
   h2.section {
-    font-size: 12.5pt;
-    font-weight: 700;
-    margin: 14pt 0 6pt;
-    text-decoration: underline;
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 16pt 0 8pt;
   }
-  p { margin: 0 0 8pt; text-align: justify; }
-  ul.bullets { margin: 4pt 0 8pt 22pt; padding: 0; }
-  ul.bullets li { margin-bottom: 4pt; }
-  .photographs { margin-top: 12pt; }
-  .photo-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10pt 14pt;
+  p { 
+    margin: 0 0 10pt; 
+    text-align: justify; 
+    font-size: 12pt;
   }
-  .photo {
-    page-break-inside: avoid;
+  ul.bullets { 
+    margin: 0 0 10pt 24pt; 
+    padding: 0; 
+  }
+  ul.bullets li { 
+    margin-bottom: 6pt; 
+    font-size: 12pt;
+    text-align: justify;
+  }
+  
+  table.content-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 12pt;
+  }
+  table.content-table td {
+    border: 1px solid #000;
+    padding: 4pt 6pt;
+    font-size: 12pt;
+  }
+  
+  .photo-center {
     text-align: center;
+    margin: 16pt 0;
   }
-  .photo img {
-    max-width: 100%;
-    max-height: 70mm;
-    border: 1px solid #111827;
-    object-fit: cover;
+  .photo-center img {
+    max-width: 80%;
+    max-height: 80mm;
+    border: 1px solid #000;
   }
-  .photo .caption {
-    font-size: 10pt;
-    font-style: italic;
-    margin-top: 4pt;
+  .photo-center .caption {
+    font-size: 12pt;
+    margin-top: 6pt;
   }
+  
   .signatures {
-    margin-top: 28pt;
     display: flex;
     justify-content: space-between;
-    page-break-inside: avoid;
+    margin-top: 60pt;
   }
-  .sig {
-    width: 30%;
+  .sig-col {
+    width: 32%;
     text-align: center;
-    font-weight: 600;
-    border-top: 1px solid #111827;
-    padding-top: 6pt;
+    font-size: 12pt;
+    line-height: 1.5;
   }
 `;

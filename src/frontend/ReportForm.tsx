@@ -147,46 +147,73 @@ export function ReportForm({
         <legend className="text-base font-semibold text-ink">
           AI output (edit before download)
         </legend>
-        <TextArea
-          label="Overview"
-          rows={4}
-          value={ai.overview}
-          onChange={(e) => setAi({ ...ai, overview: e.target.value })}
-        />
-        <TextArea
-          label="Program details - description"
-          rows={4}
-          value={ai.programDetails.description}
-          onChange={(e) =>
-            setAi({
-              ...ai,
-              programDetails: { ...ai.programDetails, description: e.target.value },
-            })
-          }
-        />
-        <TextArea
-          label="Program details - bullet points (one per line)"
-          rows={5}
-          value={ai.programDetails.bullets.join("\n")}
-          onChange={(e) =>
-            setAi({
-              ...ai,
-              programDetails: {
-                ...ai.programDetails,
-                bullets: e.target.value
-                  .split("\n")
-                  .map((s) => s.trim())
-                  .filter(Boolean),
-              },
-            })
-          }
-        />
-        <TextArea
-          label="Overall outcome"
-          rows={4}
-          value={ai.outcome}
-          onChange={(e) => setAi({ ...ai, outcome: e.target.value })}
-        />
+        
+        {ai.sections.map((sec, i) => (
+          <div key={sec.id} className="p-3 border border-gray-200 rounded-md bg-gray-50 flex flex-col gap-3 relative">
+            <button 
+              type="button" 
+              onClick={() => setAi({...ai, sections: ai.sections.filter(s => s.id !== sec.id)})}
+              className="absolute top-2 right-2 text-red-500 hover:text-red-700 text-sm font-semibold"
+            >
+              Remove
+            </button>
+            <div className="flex gap-2">
+              <span className="font-semibold text-sm uppercase text-gray-500 w-16 pt-2">{sec.type}</span>
+              <div className="flex-1">
+                <Field
+                  label="Heading"
+                  value={sec.heading}
+                  onChange={(e) => setAi({...ai, sections: ai.sections.map(s => s.id === sec.id ? {...s, heading: e.target.value} : s)})}
+                />
+              </div>
+            </div>
+            
+            <div className="pl-18">
+              {sec.type === "text" && (
+                <TextArea
+                  label="Text Content"
+                  rows={4}
+                  value={sec.text || ""}
+                  onChange={(e) => setAi({...ai, sections: ai.sections.map(s => s.id === sec.id ? {...s, text: e.target.value} : s)})}
+                />
+              )}
+              {sec.type === "bullets" && (
+                <TextArea
+                  label="Bullets (one per line)"
+                  rows={4}
+                  value={(sec.bullets || []).join("\\n")}
+                  onChange={(e) => setAi({...ai, sections: ai.sections.map(s => s.id === sec.id ? {...s, bullets: e.target.value.split("\\n")} : s)})}
+                />
+              )}
+              {sec.type === "table" && (
+                <div className="text-sm text-gray-600 bg-white p-2 border rounded">
+                  {sec.table?.map((row, r) => (
+                    <div key={r} className="flex gap-2 mb-1 border-b pb-1">
+                      {row.map((cell, c) => (
+                        <input
+                          key={c}
+                          value={cell}
+                          onChange={(e) => {
+                            const newTable = [...(sec.table || [])];
+                            newTable[r] = [...newTable[r]];
+                            newTable[r][c] = e.target.value;
+                            setAi({...ai, sections: ai.sections.map(s => s.id === sec.id ? {...s, table: newTable} : s)});
+                          }}
+                          className="flex-1 border px-2 py-1 rounded text-sm"
+                        />
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {sec.type === "image" && (
+                <div className="text-sm font-medium text-gray-700">
+                  Image placeholder for index: {sec.imageIndex}
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
       </fieldset>
     </form>
   );

@@ -1,12 +1,19 @@
 import { z } from "zod";
 
+export const ReportSectionSchema = z.object({
+  id: z.string(),
+  heading: z.string(),
+  type: z.enum(["text", "bullets", "table", "image"]),
+  text: z.string().optional(),
+  bullets: z.array(z.string()).optional(),
+  table: z.array(z.array(z.string())).optional(),
+  imageIndex: z.number().optional(),
+});
+
+export type ReportSection = z.infer<typeof ReportSectionSchema>;
+
 export const ReportDataSchema = z.object({
-  overview: z.string().min(40),
-  programDetails: z.object({
-    description: z.string().min(40),
-    bullets: z.array(z.string().min(3)).min(3).max(12),
-  }),
-  outcome: z.string().min(40),
+  sections: z.array(ReportSectionSchema),
 });
 
 export type ReportData = z.infer<typeof ReportDataSchema>;
