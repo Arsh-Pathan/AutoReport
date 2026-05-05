@@ -169,6 +169,44 @@ export function renderReportHtml(payload: ReportPayload, options: RenderOptions 
         window.parent.postMessage({ type: 'PREVIEW_EDIT', id, field, value }, '*');
       }, 500);
     });
+
+    // Automatically stretch the borders to complete the simulated A4 page
+    function fixPageHeight() {
+      const report = document.querySelector('.report');
+      const outer = document.querySelector('.report-outer-border');
+      const inner = document.querySelector('.report-inner-border');
+      if (!report || !outer || !inner) return;
+
+      // Temporarily remove min-heights to measure natural content
+      outer.style.minHeight = '0';
+      inner.style.minHeight = '0';
+      report.style.minHeight = '0';
+
+      // Re-apply original CSS mins first to get baseline
+      outer.style.minHeight = '277mm';
+      inner.style.minHeight = '275mm';
+      report.style.minHeight = '297mm';
+
+      // 1mm ~ 3.7795px
+      const pxPerMm = 3.779527559;
+      // We simulate pages as 297mm + 13mm gap = 310mm intervals
+      const totalPageHeightPx = 310 * pxPerMm; 
+
+      const contentHeight = report.scrollHeight;
+      const pages = Math.ceil(contentHeight / totalPageHeightPx);
+
+      const requiredMm = (pages * 310) - 13;
+      report.style.minHeight = requiredMm + 'mm';
+      
+      // outer border has 10mm padding on top/bottom of .report = 20mm total
+      outer.style.minHeight = (requiredMm - 20) + 'mm';
+      // inner border has extra 12mm padding on top/bottom = 24mm total from outer
+      inner.style.minHeight = (requiredMm - 22) + 'mm';
+    }
+
+    window.addEventListener('load', fixPageHeight);
+    const observer = new MutationObserver(fixPageHeight);
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
   </script>
 </body>
 </html>`;

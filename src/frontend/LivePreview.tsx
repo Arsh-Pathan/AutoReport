@@ -45,7 +45,7 @@ export function LivePreview({ payload, onPreviewEdit }: Props) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="h-[80vh] w-full">
+      <div className="h-[92vh] w-full">
         <iframe
           ref={iframeRef}
           title="Report preview"
