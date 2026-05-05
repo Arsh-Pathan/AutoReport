@@ -13,7 +13,8 @@ export const REPORT_CSS = `
   @media screen {
     html, body {
       background: #e5e7eb;
-      padding: 20px 0;
+      padding: 12px 0;
+      zoom: 0.95;
     }
     .report {
       width: 210mm;

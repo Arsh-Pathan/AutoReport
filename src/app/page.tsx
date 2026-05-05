@@ -222,8 +222,8 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <section className="bg-white rounded-lg border border-gray-200 p-5 shadow-sm">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <section className="bg-white rounded-lg border border-gray-200 p-5 shadow-sm lg:col-span-5">
           <ReportForm
             form={form}
             setForm={setForm}
@@ -239,7 +239,7 @@ export default function Home() {
           />
         </section>
 
-        <section className="lg:sticky lg:top-6 self-start">
+        <section className="lg:sticky lg:top-6 self-start lg:col-span-7">
           <h2 className="mb-2 text-sm font-medium text-gray-600 uppercase tracking-wide">
             Live preview
           </h2>

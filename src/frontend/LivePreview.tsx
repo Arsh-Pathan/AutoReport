@@ -45,11 +45,6 @@ export function LivePreview({ payload, onPreviewEdit }: Props) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex justify-between items-center mb-2 px-2 pt-2">
-        <span className="text-sm font-medium text-gray-500">
-          You can directly click and type inside this preview to make quick edits.
-        </span>
-      </div>
       <div className="rounded border border-gray-300 bg-[#e5e7eb] shadow-sm overflow-hidden h-[80vh]">
         <iframe
           ref={iframeRef}
