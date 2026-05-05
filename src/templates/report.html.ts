@@ -178,24 +178,21 @@ export function renderReportHtml(payload: ReportPayload, options: RenderOptions 
       if (!report || !outer || !inner) return;
 
       // Temporarily remove min-heights to measure natural content
+      report.style.minHeight = '0';
       outer.style.minHeight = '0';
       inner.style.minHeight = '0';
-      report.style.minHeight = '0';
 
-      // Re-apply original CSS mins first to get baseline
-      outer.style.minHeight = '277mm';
-      inner.style.minHeight = '275mm';
-      report.style.minHeight = '297mm';
+      // Get natural height
+      const contentHeight = report.scrollHeight;
 
       // 1mm ~ 3.7795px
       const pxPerMm = 3.779527559;
       // We simulate pages as 297mm + 13mm gap = 310mm intervals
       const totalPageHeightPx = 310 * pxPerMm; 
 
-      const contentHeight = report.scrollHeight;
-      const pages = Math.ceil(contentHeight / totalPageHeightPx);
-
+      const pages = Math.max(1, Math.ceil(contentHeight / totalPageHeightPx));
       const requiredMm = (pages * 310) - 13;
+      
       report.style.minHeight = requiredMm + 'mm';
       
       // outer border has 10mm padding on top/bottom of .report = 20mm total
@@ -204,8 +201,20 @@ export function renderReportHtml(payload: ReportPayload, options: RenderOptions 
       inner.style.minHeight = (requiredMm - 22) + 'mm';
     }
 
-    window.addEventListener('load', fixPageHeight);
-    const observer = new MutationObserver(fixPageHeight);
+    function runFix() {
+      // Wait for fonts and images to be ready before calculating
+      Promise.all([
+        document.fonts ? document.fonts.ready : Promise.resolve(),
+        ...Array.from(document.images).filter(img => !img.complete).map(img => new Promise(res => { img.onload = img.onerror = res; }))
+      ]).then(fixPageHeight);
+    }
+
+    window.addEventListener('load', runFix);
+    const observer = new MutationObserver(() => {
+      // Small debounce for observer to avoid layout thrashing
+      clearTimeout(window._fixTimeout);
+      window._fixTimeout = setTimeout(runFix, 50);
+    });
     observer.observe(document.body, { childList: true, subtree: true, characterData: true });
   </script>
 </body>
