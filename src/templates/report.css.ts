@@ -34,39 +34,26 @@ export const REPORT_CSS = `
       width: 100%;
       padding: 0;
     }
-    .report-outer-border {
-      border: none !important;
-    }
-    .report-inner-border {
-      border: none !important;
-    }
-    .report::before {
-      content: "";
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      border: 2px solid #000;
-      z-index: 9998;
-      pointer-events: none;
-    }
-    .report::after {
-      content: "";
-      position: fixed;
-      top: 4px; left: 4px; right: 4px; bottom: 4px;
-      border: 1px solid #000;
-      z-index: 9999;
-      pointer-events: none;
-    }
+  }
+
+  p, li, ul, ol, h1, h2, h3, h4, h5, h6 {
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
 
   .report-outer-border {
     border: 2px solid #000;
     padding: 4px;
     min-height: 277mm; /* Ensure borders stretch near bottom of A4 */
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
   }
   .report-inner-border {
     border: 1px solid #000;
     padding: 12mm 14mm;
     min-height: 275mm;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
   }
   
   .masthead {
