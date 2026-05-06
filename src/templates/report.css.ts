@@ -56,7 +56,7 @@ export const REPORT_CSS = `
       position: relative;
       z-index: 1;
       /* Match frame: 2px outer border + 4px gap + 1px inner border + 12mm content padding */
-      padding: 12mm 14mm;
+      padding: 12mm 14mm 18mm;
     }
   }
 

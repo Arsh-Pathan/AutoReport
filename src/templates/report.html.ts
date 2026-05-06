@@ -186,6 +186,7 @@ export function renderReportHtml(payload: ReportPayload, options: RenderOptions 
       const contentH = content.getBoundingClientRect().height;
       const pages = Math.max(1, Math.ceil(contentH / (pageHeightMm * pxPerMm)));
 
+      // Always size to full pages so the bottom border of the last page is visible
       const totalMm = pages * pageIntervalMm - gapMm;
       report.style.minHeight = totalMm + 'mm';
 
@@ -194,6 +195,7 @@ export function renderReportHtml(payload: ReportPayload, options: RenderOptions 
         const frame = document.createElement('div');
         frame.className = 'page-frame';
         frame.style.top = (i * pageIntervalMm) + 'mm';
+        frame.style.height = pageHeightMm + 'mm';
         framesEl.appendChild(frame);
       }
     }
