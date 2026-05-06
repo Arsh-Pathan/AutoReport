@@ -9,81 +9,41 @@ export const REPORT_CSS = `
     font-size: 12pt;
     line-height: 1.5;
   }
-  
+
+  /* ── Screen: one long white page with a double border ── */
   @media screen {
     html, body {
-      background: #ffffff;
-      padding: 12px 0;
+      background: #f0f0f0;
+      padding: 16px 0 32px;
     }
     .report {
-      position: relative;
       width: 210mm;
-      min-height: 297mm;
       margin: 0 auto;
-      background: transparent;
-      overflow: hidden;
-    }
-    /* Container for absolutely-positioned page frame divs */
-    #page-frames {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      pointer-events: none;
-      z-index: 0;
-    }
-    /* Each .page-frame is a complete white A4 page with double-border */
-    .page-frame {
-      position: absolute;
-      left: 0;
-      right: 0;
-      height: 297mm;
       background: #fff;
       border: 2px solid #000;
-      box-sizing: border-box;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
     }
-    /* Inner border inset */
-    .page-frame::after {
+    .report::after {
       content: "";
+      display: block;
       position: absolute;
       inset: 4px;
       border: 1px solid #000;
       pointer-events: none;
     }
-    /* Content flows on top of the frames */
-    .report-content {
+    .report {
       position: relative;
-      z-index: 1;
-      /* Match frame: 2px outer border + 4px gap + 1px inner border + 12mm content padding */
+    }
+    .report-content {
       padding: 12mm 14mm 18mm;
-      box-sizing: border-box;
-      width: 100%;
-      max-width: 100%;
-      overflow: hidden;
-      word-wrap: break-word;
-      overflow-wrap: break-word;
     }
-    /* Force ALL content children to stay within bounds */
-    .report-content * {
-      max-width: 100%;
-      word-break: break-word;
-      overflow-wrap: break-word;
-    }
-    .report-content table {
-      width: 100%;
-      table-layout: fixed;
-    }
-    .report-content img {
-      max-width: 100%;
-      height: auto;
-    }
+    #page-frames { display: none; }
   }
 
+  /* ── Print / PDF: proper A4 pages with border via fixed pseudo-elements ── */
   @media print {
-    html, body { background: #fff; }
-    #page-frames { display: none; }
-    .report { background: #fff; min-height: 0; }
+    html, body { background: #fff; margin: 0; padding: 0; }
+    .report { background: #fff; }
     .report-content { padding: 0; }
     body::before {
       content: "";
@@ -96,13 +56,14 @@ export const REPORT_CSS = `
     body::after {
       content: "";
       position: fixed;
-      top: 4px; left: 4px; right: 4px; bottom: 4px;
+      top: 5px; left: 5px; right: 5px; bottom: 5px;
       border: 1px solid #000;
       z-index: 9999;
       pointer-events: none;
     }
   }
 
+  /* ── Shared content styles ── */
   .masthead {
     display: flex;
     align-items: center;
@@ -114,10 +75,12 @@ export const REPORT_CSS = `
     width: 140px;
     height: auto;
     margin-right: 15pt;
+    flex-shrink: 0;
   }
   .masthead-text-col {
     flex: 1;
     text-align: left;
+    min-width: 0;
   }
   .masthead-title {
     font-size: 16pt;
@@ -130,18 +93,21 @@ export const REPORT_CSS = `
     font-weight: bold;
     line-height: 1.3;
   }
-  
+
   table.header-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20pt;
+    table-layout: fixed;
   }
   table.header-table td {
     border: 1px solid #000;
     padding: 4pt 6pt;
     font-size: 11pt;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
-  
+
   h1.title {
     text-align: center;
     font-size: 14pt;
@@ -153,32 +119,35 @@ export const REPORT_CSS = `
     font-weight: bold;
     margin: 16pt 0 8pt;
   }
-  p { 
-    margin: 0 0 10pt; 
-    text-align: justify; 
+  p {
+    margin: 0 0 10pt;
+    text-align: justify;
     font-size: 12pt;
   }
-  ul.bullets { 
-    margin: 0 0 10pt 24pt; 
-    padding: 0; 
+  ul.bullets {
+    margin: 0 0 10pt 24pt;
+    padding: 0;
   }
-  ul.bullets li { 
-    margin-bottom: 6pt; 
+  ul.bullets li {
+    margin-bottom: 6pt;
     font-size: 12pt;
     text-align: justify;
   }
-  
+
   table.content-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 12pt;
+    table-layout: fixed;
   }
   table.content-table td {
     border: 1px solid #000;
     padding: 4pt 6pt;
     font-size: 12pt;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
-  
+
   .photo-center {
     text-align: center;
     margin: 16pt 0;
@@ -186,13 +155,14 @@ export const REPORT_CSS = `
   .photo-center img {
     max-width: 80%;
     max-height: 80mm;
+    height: auto;
     border: 1px solid #000;
   }
   .photo-center .caption {
     font-size: 12pt;
     margin-top: 6pt;
   }
-  
+
   .signatures {
     display: flex;
     justify-content: space-between;

@@ -89,9 +89,6 @@ export function renderReportHtml(payload: ReportPayload, options: RenderOptions 
 </head>
 <body>
   <main class="report">
-    <!-- Page frames are injected here by JS -->
-    <div id="page-frames" aria-hidden="true"></div>
-    <!-- All content in a single relative flow on top of the frames -->
     <div class="report-content">
       <table class="masthead-table" style="width: 100%; border-bottom: 1.5px solid #000; padding-bottom: 15pt; margin-bottom: 25pt;">
         <tr>
@@ -149,71 +146,18 @@ export function renderReportHtml(payload: ReportPayload, options: RenderOptions 
     </div>
   </main>
   <script>
-    let timeout;
+    let _t;
     document.addEventListener('input', (e) => {
       const target = e.target.closest('[data-sec-id]');
       if (!target) return;
       const id = target.getAttribute('data-sec-id');
       const field = target.getAttribute('data-sec-field');
-      
       let value = target.innerText;
-      if (field === 'bullets') {
-        value = Array.from(target.querySelectorAll('li')).map(li => li.innerText);
-      } else if (field === 'table') {
-        value = Array.from(target.querySelectorAll('tr')).map(tr => 
-          Array.from(tr.querySelectorAll('td')).map(td => td.innerText)
-        );
-      }
-      
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        window.parent.postMessage({ type: 'PREVIEW_EDIT', id, field, value }, '*');
-      }, 500);
+      if (field === 'bullets') value = Array.from(target.querySelectorAll('li')).map(li => li.innerText);
+      else if (field === 'table') value = Array.from(target.querySelectorAll('tr')).map(tr => Array.from(tr.querySelectorAll('td')).map(td => td.innerText));
+      clearTimeout(_t);
+      _t = setTimeout(() => window.parent.postMessage({ type: 'PREVIEW_EDIT', id, field, value }, '*'), 500);
     });
-
-    // Draw one complete page-frame rect per simulated A4 page behind the content
-    const pxPerMm = 3.779527559;
-    const pageHeightMm = 297;
-    const gapMm = 13;
-    const pageIntervalMm = pageHeightMm + gapMm;
-
-    function buildPageFrames() {
-      const report = document.querySelector('.report');
-      const content = document.querySelector('.report-content');
-      const framesEl = document.getElementById('page-frames');
-      if (!report || !content || !framesEl) return;
-
-      const contentH = content.getBoundingClientRect().height;
-      const pages = Math.max(1, Math.ceil(contentH / (pageHeightMm * pxPerMm)));
-
-      // Always size to full pages so the bottom border of the last page is visible
-      const totalMm = pages * pageIntervalMm - gapMm;
-      report.style.minHeight = totalMm + 'mm';
-
-      framesEl.innerHTML = '';
-      for (let i = 0; i < pages; i++) {
-        const frame = document.createElement('div');
-        frame.className = 'page-frame';
-        frame.style.top = (i * pageIntervalMm) + 'mm';
-        frame.style.height = pageHeightMm + 'mm';
-        framesEl.appendChild(frame);
-      }
-    }
-
-    window.addEventListener('load', () => {
-      Promise.all([
-        document.fonts ? document.fonts.ready : Promise.resolve(),
-        ...Array.from(document.images)
-          .filter(img => !img.complete)
-          .map(img => new Promise(res => { img.onload = img.onerror = res; }))
-      ]).then(() => { buildPageFrames(); setTimeout(buildPageFrames, 300); });
-    });
-
-    const reportContent = document.querySelector('.report-content');
-    if (reportContent && typeof ResizeObserver !== 'undefined') {
-      let roTimer;
-      new ResizeObserver(() => { clearTimeout(roTimer); roTimer = setTimeout(buildPageFrames, 80); }).observe(reportContent);
-    }
   </script>
 </body>
 </html>`;
