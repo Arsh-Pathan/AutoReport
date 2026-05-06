@@ -22,6 +22,7 @@ export const REPORT_CSS = `
       min-height: 297mm;
       margin: 0 auto;
       background: transparent;
+      overflow: hidden;
     }
     /* Container for absolutely-positioned page frame divs */
     #page-frames {
@@ -57,6 +58,8 @@ export const REPORT_CSS = `
       z-index: 1;
       /* Match frame: 2px outer border + 4px gap + 1px inner border + 12mm content padding */
       padding: 12mm 14mm 18mm;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
   }
 
