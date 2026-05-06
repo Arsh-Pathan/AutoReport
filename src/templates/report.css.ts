@@ -14,7 +14,6 @@ export const REPORT_CSS = `
     html, body {
       background: #ffffff;
       padding: 12px 0;
-      zoom: 0.95;
     }
     .report {
       position: relative;
@@ -58,8 +57,26 @@ export const REPORT_CSS = `
       z-index: 1;
       /* Match frame: 2px outer border + 4px gap + 1px inner border + 12mm content padding */
       padding: 12mm 14mm 18mm;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 100%;
+      overflow: hidden;
       word-wrap: break-word;
       overflow-wrap: break-word;
+    }
+    /* Force ALL content children to stay within bounds */
+    .report-content * {
+      max-width: 100%;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+    .report-content table {
+      width: 100%;
+      table-layout: fixed;
+    }
+    .report-content img {
+      max-width: 100%;
+      height: auto;
     }
   }
 
