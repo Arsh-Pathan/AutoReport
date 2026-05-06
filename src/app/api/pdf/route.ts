@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { buildDocx } from "@/backend/docx";
-import { docxToPdf } from "@/backend/pdf";
+import { renderReportHtml } from "@/templates/report.html";
+import { htmlToPdf } from "@/backend/pdf";
 import { processImage } from "@/services/imagePipeline";
 import { reportFilename, rfc5987 } from "@/utils/filename";
 import type { ReportPayload } from "@/types/report";
@@ -26,11 +26,10 @@ export async function POST(req: Request) {
       src: processed[i]?.dataUrl || p.src,
     }));
 
-    // Generate DOCX first
-    const docxBuffer = await buildDocx(payload, processed.filter(p => p !== null) as any);
-    
-    // Convert DOCX to PDF
-    const pdf = await docxToPdf(docxBuffer);
+    const html = renderReportHtml(payload, {
+      assetBaseUrl: `${new URL(req.url).origin}/`,
+    });
+    const pdf = await htmlToPdf(html);
 
     const filename = reportFilename(payload.meta.date, "pdf");
     return new NextResponse(new Uint8Array(pdf), {
