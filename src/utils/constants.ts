@@ -9,7 +9,7 @@ export const REPORT_DEFAULTS = {
 
 export const SIGNATORIES = {
   advisor: "Prof. Yugashree Pawar",
-  sdpHead: "Dr. Vishvas Kalunge",
+  sdpHead: "Dr. Vishvas Kalunge / Prof. Sandip Kale",
   principal: "Dr. Abhijit Dandavate",
 };
 
