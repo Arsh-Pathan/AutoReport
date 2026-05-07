@@ -9,12 +9,12 @@ export const REPORT_CSS = `
     font-size: 12pt;
     line-height: 1.5;
   }
-
-  /* ── Screen: one long white page with a double border ── */
+  
   @media screen {
     html, body {
-      background: #f0f0f0;
-      padding: 16px 0 32px;
+      background: #ffffff;
+      padding: 12px 0;
+      zoom: 0.95;
     }
     .report {
       width: 210mm;
